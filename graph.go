@@ -532,3 +532,18 @@ func (h *Graph[K]) Lookup(key K) (Vector, bool) {
 	}
 	return node.Value, ok
 }
+
+// All returns every node in the graph as a slice of Node values.
+// This is useful for reconstructing external state (e.g., a shadow map)
+// after loading a persisted graph, since Search is approximate and may
+// not return all nodes.
+func (h *Graph[K]) All() []Node[K] {
+	if len(h.layers) == 0 {
+		return nil
+	}
+	nodes := make([]Node[K], 0, len(h.layers[0].nodes))
+	for key, n := range h.layers[0].nodes {
+		nodes = append(nodes, Node[K]{Key: key, Value: n.Value})
+	}
+	return nodes
+}
